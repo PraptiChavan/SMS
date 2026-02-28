@@ -16,4 +16,8 @@ RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 10000
 
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
