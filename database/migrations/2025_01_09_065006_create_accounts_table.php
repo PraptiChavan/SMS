@@ -15,7 +15,8 @@ class CreateAccountsTable extends Migration
                 $table->string('name')->nullable();
                 $table->string('email')->nullable();
                 $table->string('password')->notNullable();
-                $table->unsignedBigInteger('student_id')->nullable()->after('password'); // Ensure it's nullable
+                // $table->unsignedBigInteger('student_id')->nullable()->after('password'); // Ensure it's nullable
+                $table->unsignedBigInteger('student_id')->nullable();
                 $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
                 $table->timestamps();
             });

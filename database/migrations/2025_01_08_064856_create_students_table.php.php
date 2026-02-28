@@ -45,7 +45,7 @@ class CreateStudentsTable extends Migration
                 $table->timestamps();
     
                 // Foreign key linking to accounts table
-                $table->foreign('id')->references('id')->on('accounts')->onDelete('cascade');
+                // $table->foreign('id')->references('id')->on('accounts')->onDelete('cascade');
             });
         }
     }
