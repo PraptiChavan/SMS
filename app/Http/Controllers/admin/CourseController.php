@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller; // Import the base Controller class
 use App\Models\admin\CourseModel; // Updated reference to the model's namespace
-use CloudinaryLabs\Cloudinary\Facades\Cloudinary;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
 class CourseController extends Controller
