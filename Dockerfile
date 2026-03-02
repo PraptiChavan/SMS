@@ -13,9 +13,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan route:clear
 
 EXPOSE 10000
 
