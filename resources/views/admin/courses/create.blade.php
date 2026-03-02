@@ -131,6 +131,11 @@
 </script>
 
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $(document).ready(function() {
         $('#addCourseForm').on('submit', function(event) {
             event.preventDefault(); // Stop default Laravel form submission
