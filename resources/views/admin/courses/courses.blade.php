@@ -91,7 +91,7 @@
                                         <tr>
                                             <td>{{ $course->id }}</td>
                                             <td>
-                                                <img src="{{ $course->image ? asset('storage/' . $course->image) : asset('images/no-image.png') }}" height="100" alt="Course Image">
+                                                <img src="{{ $course->image ?? asset('images/no-image.png') }}" height="100" alt="Course Image">
                                             </td>
                                             <td>{{ $course->name }}</td>
                                             <td>{{ $course->category }}</td>

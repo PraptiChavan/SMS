@@ -479,7 +479,7 @@
                 <div class="col-lg-3 mb-4">
                     <div class="card">
                         <div>
-                            <img src="{{ $course->image ? asset('storage/' . $course->image) : asset('images/no-image.png') }}" alt="{{ $course->name }}" class="img-fluid rounded-top">
+                            <img src="{{ $course->image ?? asset('images/no-image.png') }}" alt="{{ $course->name }}" class="img-fluid rounded-top">
                         </div>
                         <div class="card-body">
                             <b>{{ $course->name }}</b>

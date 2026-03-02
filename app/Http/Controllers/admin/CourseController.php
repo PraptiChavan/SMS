@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller; // Import the base Controller class
 use App\Models\admin\CourseModel; // Updated reference to the model's namespace
+use CloudinaryLabs\Cloudinary\Facades\Cloudinary;
 
 
 class CourseController extends Controller
@@ -36,9 +37,19 @@ class CourseController extends Controller
             return response()->json(['error' => 'A course with this name already exists.'], 400);
         }
 
+        // $imagePath = null;
+        // if ($request->hasFile('image')) {
+        //     $imagePath = $request->file('image')->store('courses', 'public');
+        // }
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('courses', 'public');
+
+            $uploadedFileUrl = Cloudinary::upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'courses']
+            )->getSecurePath();
+
+            $imagePath = $uploadedFileUrl;
         }
 
         $course = new CourseModel;
@@ -78,14 +89,28 @@ class CourseController extends Controller
             'date' => $request->date,
         ];
 
+        // if ($request->hasFile('image')) {
+        //     // Delete old image if exists
+        //     if ($courses->image && Storage::exists('public/' . $courses->image)) {
+        //         Storage::delete('public/' . $courses->image);
+        //     }
+
+        //     // Store new image
+        //     $data['image'] = $request->file('image')->store('courses', 'public');
+        // }
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($courses->image && Storage::exists('public/' . $courses->image)) {
-                Storage::delete('public/' . $courses->image);
+
+            if ($courses->image) {
+                $publicId = basename($courses->image, '.' . pathinfo($courses->image, PATHINFO_EXTENSION));
+                Cloudinary::destroy('courses/' . $publicId);
             }
 
-            // Store new image
-            $data['image'] = $request->file('image')->store('courses', 'public');
+            $uploadedFileUrl = Cloudinary::upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'courses']
+            )->getSecurePath();
+
+            $data['image'] = $uploadedFileUrl;
         }
 
         $courses->update($data);
