@@ -67,7 +67,7 @@
     <div id="loadingOverlay" style="display: none;">
         <div class="spinner-box">
             <img src="{{ asset('assets/img/admin/users/loading.gif') }}" alt="Loading..." width="80">
-            <p><b>Loading, please wait...</b></p>
+            <p><b>Processing, please wait...</b></p>
         </div>
     </div>
 
@@ -140,57 +140,102 @@
 <script>
     $(document).ready(function () {
         // Form submission with AJAX
-        $('#classForm').submit(function (event) {
-            event.preventDefault(); // Prevent default form submission
+        // $('#classForm').submit(function (event) {
+        //     event.preventDefault(); // Prevent default form submission
 
-            let title = $('#title').val(); // Class title
-            let sections = []; // Array to hold selected section IDs
+        //     let title = $('#title').val(); // Class title
+        //     let sections = []; // Array to hold selected section IDs
 
-            // Loop through the checkboxes to collect the selected sections
-            $('input[name="sections[]"]:checked').each(function () {
-                sections.push($(this).val());
-            });
+        //     // Loop through the checkboxes to collect the selected sections
+        //     $('input[name="sections[]"]:checked').each(function () {
+        //         sections.push($(this).val());
+        //     });
 
-            // Show loading spinner
-            $('#loadingOverlay').show();
+        //     // Show loading spinner
+        //     $('#loadingOverlay').show();
+
+        //     $.ajax({
+        //         url: "{{ route('admin.classes.store') }}", // Route to store class
+        //         type: "POST",
+        //         data: {
+        //             _token: "{{ csrf_token() }}",
+        //             title: title,
+        //             sections: sections // Send the selected sections as an array
+        //         },
+        //         success: function (response) {
+        //             $('#loadingOverlay').hide(); // Hide spinner
+
+        //             if (response.success) {
+        //                 // Show success popup
+        //                 Swal.fire({
+        //                     icon: "success",
+        //                     title: "Success!",
+        //                     text: response.success
+        //                 }).then(() => {
+        //                     // Show loading spinner before redirecting
+        //                     $('#loadingOverlay').show(); 
+
+        //                     // Redirect to classes view after success
+        //                     window.location.href = "{{ route('admin.classes') }}"; 
+        //                 });
+        //             }
+        //         },
+        //         error: function (xhr) {
+        //             $('#loadingOverlay').hide(); // Hide spinner
+
+        //             if (xhr.status === 400) {
+        //                 // Show error popup
+        //                 Swal.fire({
+        //                     icon: "error",
+        //                     title: "Oops...",
+        //                     text: xhr.responseJSON.error
+        //                 });
+        //             }
+        //         }
+        //     });
+        // });
+
+        $('#classForm').on('submit', function(e) {
+            e.preventDefault();
+
+            // SHOW OVERLAY
+            document.getElementById('loadingOverlay').style.display = 'flex';
 
             $.ajax({
-                url: "{{ route('admin.classes.store') }}", // Route to store class
+                url: "{{ route('admin.classes.store') }}",
                 type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    title: title,
-                    sections: sections // Send the selected sections as an array
+                data: $(this).serialize(),
+
+                success: function(response) {
+
+                    // HIDE OVERLAY
+                    document.getElementById('loadingOverlay').style.display = 'none';
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.success
+                    }).then(() => {
+                        window.location.href = "{{ route('admin.classes.index') }}";
+                    });
                 },
-                success: function (response) {
-                    $('#loadingOverlay').hide(); // Hide spinner
 
-                    if (response.success) {
-                        // Show success popup
-                        Swal.fire({
-                            icon: "success",
-                            title: "Success!",
-                            text: response.success
-                        }).then(() => {
-                            // Show loading spinner before redirecting
-                            $('#loadingOverlay').show(); 
+                error: function(xhr) {
 
-                            // Redirect to classes view after success
-                            window.location.href = "{{ route('admin.classes') }}"; 
-                        });
+                    // HIDE OVERLAY
+                    document.getElementById('loadingOverlay').style.display = 'none';
+
+                    let errorMessage = 'Something went wrong';
+
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
                     }
-                },
-                error: function (xhr) {
-                    $('#loadingOverlay').hide(); // Hide spinner
 
-                    if (xhr.status === 400) {
-                        // Show error popup
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: xhr.responseJSON.error
-                        });
-                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
+                    });
                 }
             });
         });
