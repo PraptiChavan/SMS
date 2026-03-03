@@ -33,53 +33,54 @@ class ClassController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'sections' => 'nullable|array', // Sections are optional
-            'sections.*' => 'string|max:255',
+            'sections' => 'nullable|array',
+            'sections.*' => 'integer|exists:sections,id',
         ]);
 
-        // Ensure sections are stored as an array of strings
-        $sections = $request->sections ? array_map('strval', $request->sections) : [];
-
-        // Sort sections for consistency
+        $sections = $request->sections ?? [];
+        $sections = array_map('intval', $sections);
         sort($sections);
 
-        // Check if a class with the same title already exists
         $existingClass = ClassModel::where('title', $request->title)->first();
 
         if ($existingClass) {
-            // Fetch the existing sections and ensure they are stored as an array of strings
-            $existingSections = $existingClass->sections ? array_map('trim', explode(',', $existingClass->sections)) : [];
+
+            $existingSections = $existingClass->sections
+                ? explode(',', $existingClass->sections)
+                : [];
+
+            $existingSections = array_map('intval', $existingSections);
             sort($existingSections);
 
-            // Debugging: Check what sections are being compared
-            // logger("Existing Sections: " . implode(", ", $existingSections));
-            // logger("New Sections: " . implode(", ", $sections));
-
-            // Check if any of the new sections already exist
             $duplicateSections = array_intersect($sections, $existingSections);
 
             if (!empty($duplicateSections)) {
+
+                $duplicateTitles = Section::whereIn('id', $duplicateSections)
+                    ->pluck('title')
+                    ->toArray();
+
                 return response()->json([
-                    'error' => 'The following sections already exist for this class: ' . implode(', ', Section::whereIn('id', explode(',', implode(',', $duplicateSections)))->pluck('title')->toArray()),
-                ], 400); // Return 400 Bad Request
+                    'error' => 'The following sections already exist for this class: '
+                        . implode(', ', $duplicateTitles),
+                ], 400);
             }
 
-            // Merge new sections with existing ones
             $sections = array_merge($existingSections, $sections);
         }
 
-        // Remove duplicates from the final list
         $sections = array_unique($sections);
 
-        // Update or create the class with sections
         $class = $existingClass ?? new ClassModel;
         $class->title = $request->title;
-        $class->sections = !empty($sections) ? implode(', ', $sections) : null;
+        $class->sections = !empty($sections)
+            ? implode(',', $sections)
+            : null;
+
         $class->save();
 
         return response()->json([
-            'success' => 'Class with selected sections added successfully!',
-            'newClass' => $class,
+            'success' => 'Class added successfully!'
         ]);
     }
 

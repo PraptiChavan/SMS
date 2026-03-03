@@ -63,6 +63,14 @@
         </div>
     </div>
 
+    <!-- Full Page Loading Spinner -->
+    <div id="loadingOverlay" style="display: none;">
+        <div class="spinner-box">
+            <img src="{{ asset('assets/img/admin/users/loading.gif') }}" alt="Loading..." width="80">
+            <p><b>Loading, please wait...</b></p>
+        </div>
+    </div>
+
     <!-- App Content -->
     <div class="app-content">
         <div class="container-fluid">
@@ -93,15 +101,6 @@
                         <button type="submit" id="submitBtn" class="btn btn-success" style="margin-top: 20px;">
                             Submit
                         </button>
-
-                        <!-- Loading Spinner -->
-                        <!-- Full-Screen Loading Overlay -->
-                        <div id="loadingOverlay" style="display: none !important;">
-                            <div class="spinner-box">
-                                <img src="{{ asset('assets/img/admin/users/loading.gif') }}" alt="Loading..." width="80">
-                                <p><b>Processing, please wait...</b></p>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
