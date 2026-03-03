@@ -3,24 +3,22 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller; // Import the base Controller class
-use App\Models\admin\CourseModel; // Updated reference to the model's namespace
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-
+use App\Http\Controllers\Controller;
+use App\Models\admin\CourseModel;
+use Cloudinary\Cloudinary;   // ✅ CHANGED (important)
 
 class CourseController extends Controller
 {
     public function index()
     {
-        $courses = CourseModel::all();// Fetch all sections from the database
+        $courses = CourseModel::all();
         return view('admin.courses.courses', compact('courses'));
     }
 
     public function create()
     {
-        return view('admin.courses.create');// View for adding a new section
+        return view('admin.courses.create');
     }
 
     public function store(Request $request)
@@ -37,19 +35,19 @@ class CourseController extends Controller
             return response()->json(['error' => 'A course with this name already exists.'], 400);
         }
 
-        // $imagePath = null;
-        // if ($request->hasFile('image')) {
-        //     $imagePath = $request->file('image')->store('courses', 'public');
-        // }
         $imagePath = null;
+
         if ($request->hasFile('image')) {
 
-            $uploadedFileUrl = Cloudinary::upload(
+            // ✅ Create Cloudinary instance using ENV directly
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+
+            $uploadResult = $cloudinary->uploadApi()->upload(
                 $request->file('image')->getRealPath(),
                 ['folder' => 'courses']
-            )->getSecurePath();
+            );
 
-            $imagePath = $uploadedFileUrl;
+            $imagePath = $uploadResult['secure_url'];
         }
 
         $course = new CourseModel;
@@ -66,7 +64,6 @@ class CourseController extends Controller
     public function edit($id)
     {
         $courses = CourseModel::findOrFail($id);
-
         return view('admin.courses.edit', compact('courses'));
     }
 
@@ -89,33 +86,28 @@ class CourseController extends Controller
             'date' => $request->date,
         ];
 
-        // if ($request->hasFile('image')) {
-        //     // Delete old image if exists
-        //     if ($courses->image && Storage::exists('public/' . $courses->image)) {
-        //         Storage::delete('public/' . $courses->image);
-        //     }
-
-        //     // Store new image
-        //     $data['image'] = $request->file('image')->store('courses', 'public');
-        // }
         if ($request->hasFile('image')) {
 
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+
+            // Delete old image if exists
             if ($courses->image) {
                 $publicId = basename($courses->image, '.' . pathinfo($courses->image, PATHINFO_EXTENSION));
-                Cloudinary::destroy('courses/' . $publicId);
+                $cloudinary->uploadApi()->destroy('courses/' . $publicId);
             }
 
-            $uploadedFileUrl = Cloudinary::upload(
+            $uploadResult = $cloudinary->uploadApi()->upload(
                 $request->file('image')->getRealPath(),
                 ['folder' => 'courses']
-            )->getSecurePath();
+            );
 
-            $data['image'] = $uploadedFileUrl;
+            $data['image'] = $uploadResult['secure_url'];
         }
 
         $courses->update($data);
 
-        return redirect()->route('admin.courses')->with('success', 'Course updated successfully, including the new image!');
+        return redirect()->route('admin.courses')
+            ->with('success', 'Course updated successfully, including the new image!');
     }
 
     public function destroy($id)
@@ -123,6 +115,7 @@ class CourseController extends Controller
         $courses = CourseModel::findOrFail($id);
         $courses->delete();
 
-        return redirect()->route('admin.courses')->with('success', 'Course deleted successfully!');
+        return redirect()->route('admin.courses')
+            ->with('success', 'Course deleted successfully!');
     }
 }
