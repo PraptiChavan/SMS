@@ -71,7 +71,7 @@ class ParentMeetingController extends Controller {
                 'accounts.name as teacher_name',
                 'classes.title as class_title',
                 'updated_by.name as updated_by_name',
-                DB::raw("DATE_FORMAT(parents_meetings.time, '%H:%i') as formatted_time")
+                DB::raw("TO_CHAR(parents_meetings.time, 'HH24:MI') as formatted_time")
             )
             ->leftJoin('accounts as updated_by', 'parents_meetings.status_updated_by', '=', 'updated_by.id')
             ->where('parents_meetings.date', '>=', now()->toDateString());
@@ -97,7 +97,7 @@ class ParentMeetingController extends Controller {
                 'accounts.name as teacher_name',
                 'classes.title as class_title',
                 'updated_by.name as updated_by_name',
-                DB::raw("DATE_FORMAT(parents_meetings.time, '%H:%i') as formatted_time")
+                DB::raw("TO_CHAR(parents_meetings.time, 'HH24:MI') as formatted_time")
             )
             ->leftJoin('accounts as updated_by', 'parents_meetings.status_updated_by', '=', 'updated_by.id')            
             ->where('parents_meetings.class_id', $classId)

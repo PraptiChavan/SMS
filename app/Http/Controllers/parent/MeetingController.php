@@ -63,7 +63,7 @@ class MeetingController extends Controller
                 'parents_meetings.*',
                 'accounts.name as teacher_name',
                 'classes.title as class_title',
-                DB::raw("DATE_FORMAT(parents_meetings.time, '%H:%i') as formatted_time")
+                DB::raw("TO_CHAR(parents_meetings.time, 'HH24:MI') as formatted_time")
             )
             ->where('parents_meetings.date', '>=', now()->toDateString())
             ->whereIn('parents_meetings.class_id', $classIds)
