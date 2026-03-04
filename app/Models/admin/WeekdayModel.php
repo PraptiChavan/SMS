@@ -12,6 +12,6 @@ class WeekdayModel extends Model
     protected $table = 'weekdays';
 
     protected $fillable = [
-        'weekdays',
+        'title',
     ];
 }

@@ -19,7 +19,7 @@ class TimeController extends Controller
         $classes = ClassModel::all();
         $sections = Section::all();
         $periods = PeriodModel::where('id', '!=', 5)->get(); // Exclude the fifth period
-        $weekdays = WeekdayModel::all();
+        $weekdays = WeekdayModel::where('title', '!=', 'Sunday')->get();
         $accounts = Account::where('type', 'teacher')->get();
         // Retrieve all time entries
         $time = TimeModel::all();
@@ -46,7 +46,7 @@ class TimeController extends Controller
         $periods = PeriodModel::where('id', '!=', 5)->get(); // Exclude the fifth period
         $accounts = Account::where('type', 'teacher')->get();
         $subjects = SubjectModel::all();
-        $weekdays = WeekdayModel::all();
+        $weekdays = WeekdayModel::where('title', '!=', 'Sunday')->get();
 
         return view('admin.time-table.create', compact('classes', 'sections', 'periods', 'accounts', 'subjects', 'weekdays'));
     }
@@ -135,7 +135,7 @@ class TimeController extends Controller
         $periods = PeriodModel::where('id', '!=', 5)->get();
         $accounts = Account::where('type', 'teacher')->get();
         $subjects = SubjectModel::all();
-        $weekdays = WeekdayModel::all();
+        $weekdays = WeekdayModel::where('title', '!=', 'Sunday')->get();
     
         return view('admin.time-table.edit', compact('entry', 'classes', 'sections', 'periods', 'accounts', 'subjects', 'weekdays'));
     }
