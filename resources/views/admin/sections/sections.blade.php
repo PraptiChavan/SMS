@@ -100,7 +100,17 @@
                                                     <td>
                                                         <!-- Example Action (could be a view/edit/delete button) -->
                                                         <a href="{{ route('admin.sections.edit', $section->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                                                        <a href="{{ route('admin.sections.destroy', $section->id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this section?');"><i class="fa fa-trash fa-fw"></i></a>
+                                                        <form action="{{ route('admin.sections.destroy', $section->id) }}" 
+                                                            method="POST" 
+                                                            style="display:inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" 
+                                                                    class="btn btn-danger btn-sm"
+                                                                    onclick="return confirm('Are you sure you want to delete this section?');">
+                                                                <i class="fa fa-trash fa-fw"></i>
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -191,10 +201,34 @@
 
         // Function to update the table dynamically
         function updateTable(section) {
-            let newRow = `<tr>
-                <td>${$('#sections-table tbody tr').length + 1}</td>
-                <td>${section.title}</td>
-            </tr>`;
+
+            let rowCount = $('#sections-table tbody tr').length + 1;
+
+            let newRow = `
+                <tr>
+                    <td>${rowCount}</td>
+                    <td>${section.title}</td>
+                    <td>
+                        <a href="/admin/sections/edit/${section.id}" 
+                        class="btn btn-primary btn-sm">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+
+                        <form action="/admin/sections/destroy/${section.id}" 
+                            method="POST" 
+                            style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this section?');">
+                                <i class="fa fa-trash fa-fw"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            `;
+
             $('#sections-table tbody').append(newRow);
         }
     });
