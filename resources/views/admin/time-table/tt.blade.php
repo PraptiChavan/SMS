@@ -242,11 +242,17 @@
                                 <a href="{{ route('admin.time-table.edit', '') }}/${entry.id}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <a href="{{ route('admin.time-table.destroy', '') }}/${entry.id}" 
-                                   class="btn btn-sm btn-danger" 
-                                   onclick="return confirm('Are you sure you want to delete this entry?');">
-                                    <i class="fa fa-trash fa-fw"></i>
-                                </a>`;
+                                <form action="{{ route('admin.time-table.destroy', '') }}/${entry.id}" 
+                                    method="POST" 
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete this entry?');">
+                                        <i class="fa fa-trash fa-fw"></i>
+                                    </button>
+                                </form>`;
                 }
             });
 
@@ -322,11 +328,17 @@
                                  <a href="{{ route('admin.time-table.edit', '') }}/${entry.id}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-pencil-alt"></i>
                                  </a>
-                                 <a href="{{ route('admin.time-table.destroy', '') }}/${entry.id}" 
-                                 class="btn btn-sm btn-danger" 
-                                 onclick="return confirm('Are you sure you want to delete this entry?');">
-                                    <i class="fa fa-trash fa-fw"></i>
-                                 </a>`;
+                                 <form action="{{ route('admin.time-table.destroy', '') }}/${entry.id}" 
+                                    method="POST" 
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete this entry?');">
+                                        <i class="fa fa-trash fa-fw"></i>
+                                    </button>
+                                 </form>`;
                 }
             });
 
