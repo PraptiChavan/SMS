@@ -241,26 +241,54 @@
         });
 
         function updateTable(subject, isUpdate) {
-            if (isUpdate) {
-                let row = $(`#subjects-table tbody tr:contains('${subject.name}')`).filter(function () {
-                    return $(this).find("td:eq(2)").text() === subject.classTitle;
-                });
 
+            if (isUpdate) {
+                let row = $(`#subjects-table tbody tr:contains('${subject.name}')`);
                 if (row.length) {
                     row.find("td:eq(3)").text(subject.sectionTitles.join(', '));
                     return;
                 }
             }
 
-            let newRow = `<tr>
-                <td>${$('#subjects-table tbody tr').length + 1}</td>
-                <td>${subject.name}</td>
-                <td>${subject.classTitle}</td>
-                <td>${subject.sectionTitles.join(', ')}</td>
-            </tr>`;
+            let newRow = `
+                <tr>
+                    <td>${$('#subjects-table tbody tr').length + 1}</td>
+                    <td>${subject.name}</td>
+                    <td>${subject.classTitle}</td>
+                    <td>${subject.sectionTitles.join(', ')}</td>
+                    <td>
+                        <a href="/admin/subjects/edit/${subject.id}" 
+                        class="btn btn-primary btn-sm">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+
+                        <form action="/admin/subjects/destroy/${subject.id}" 
+                            method="POST" 
+                            style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" 
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this subject?');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            `;
+
             $('#subjects-table tbody').append(newRow);
         }
     });
+</script>
+
+<!-- Script for updating counters -->
+<script>
+    function updateCounter(inputId, counterId) {
+        let inputElement = document.getElementById(inputId);
+        let counterElement = document.getElementById(counterId);
+        counterElement.textContent = `${inputElement.value.length}/${inputElement.maxLength}`;
+    }
 </script>
 
 @include('layouts.a_footer')
