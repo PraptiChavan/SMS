@@ -216,7 +216,7 @@
                         title: 'Success',
                         text: response.success
                     }).then(() => {
-                        window.location.href = "{{ route('admin.classes.index') }}";
+                        window.location.href = "{{ route('admin.classes') }}";
                     });
                 },
 
