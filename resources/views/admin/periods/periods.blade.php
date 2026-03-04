@@ -104,7 +104,18 @@
                                                     <td>
                                                         <!-- Example Action (could be a view/edit/delete button) -->
                                                         <a href="{{ route('admin.periods.edit', $period->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                                                        <a href="{{ route('admin.periods.destroy', $period->id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');"><i class="fa fa-trash fa-fw"></i></a>
+                                                            <form action="{{ route('admin.periods.destroy', $period->id) }}" 
+                                                                method="POST" 
+                                                                style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+
+                                                                <button type="submit"
+                                                                        class="btn btn-danger btn-sm"
+                                                                        onclick="return confirm('Are you sure you want to delete this period?');">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -216,13 +227,37 @@
 
         // Function to update the table dynamically
         function updateTable(period) {
-            let newRow = `<tr>
-                <td>${$('#sections-table tbody tr').length + 1}</td> <!-- Updated table ID -->
-                <td>${period.title}</td>
-                <td>${period.from}</td>
-                <td>${period.to}</td>
-            </tr>`;
-            $('#sections-table tbody').append(newRow); // Update this with the correct table ID
+
+            let rowCount = $('#sections-table tbody tr').length + 1;
+
+            let newRow = `
+                <tr>
+                    <td>${rowCount}</td>
+                    <td>${period.title}</td>
+                    <td>${period.from}</td>
+                    <td>${period.to}</td>
+                    <td>
+                        <a href="/admin/periods/edit/${period.id}" 
+                        class="btn btn-primary btn-sm">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+
+                        <form action="/admin/periods/destroy/${period.id}" 
+                            method="POST" 
+                            style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" 
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this period?');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            `;
+
+            $('#sections-table tbody').append(newRow);
         }
     });
 </script>
