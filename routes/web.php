@@ -25,6 +25,16 @@ use Illuminate\Support\Facades\Route;//Admin Route
 // git commit -m "Remove temporary reset route"
 // git push origin main
 
+
+
+// This route is for Running  migration
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-migration', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migration completed!';
+});
+
 use App\Http\Controllers\admin\ClassController;//Admin Route
 use App\Http\Controllers\admin\SectionController;//Admin Route
 use App\Http\Controllers\admin\CourseController;//Admin Route
