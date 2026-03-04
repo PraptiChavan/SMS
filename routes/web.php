@@ -28,12 +28,12 @@ use Illuminate\Support\Facades\Route;//Admin Route
 
 
 // This route is for Running  migration
-use Illuminate\Support\Facades\Artisan;
+// use Illuminate\Support\Facades\Artisan;
 
-Route::get('/run-migration', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    return 'Migration completed!';
-});
+// Route::get('/run-migration', function () {
+//     Artisan::call('migrate', ['--force' => true]);
+//     return 'Migration completed!';
+// });
 
 use App\Http\Controllers\admin\ClassController;//Admin Route
 use App\Http\Controllers\admin\SectionController;//Admin Route

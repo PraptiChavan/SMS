@@ -22,7 +22,6 @@ return new class extends Migration
             ['title' => 'Thursday'],
             ['title' => 'Friday'],
             ['title' => 'Saturday'],
-            ['title' => 'Sunday'],
         ]);
     }
 
