@@ -190,7 +190,7 @@ class TimeController extends Controller
         $entry = TimeModel::findOrFail($id);
         $entry->delete();
 
-        return response()->json(['success' => 'Timetable entry deleted successfully.']);
+        return redirect()->route('admin.time-table')->with('success', 'Timetable entry deleted successfully!');
     }
 
 }
