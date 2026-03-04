@@ -113,14 +113,14 @@ class TimeController extends Controller
     {
         $teacherId = $request->teacher_id;
 
-        // Fetch time entries where the teacher is assigned
-        $filteredTime = TimeModel::whereRaw("FIND_IN_SET(?, teachers)", [$teacherId])->get();
+        $filteredTime = TimeModel::where('teachers', $teacherId)->get();
 
-        // Transform the data to include class, section, and subjects names
         $filteredTime->transform(function ($entry) {
             $entry->class_title = ClassModel::find($entry->classes)?->title ?? 'No Class';
             $entry->section_title = Section::find($entry->sections)?->title ?? 'No Section';
-            $entry->subjects = SubjectModel::whereIn('id', explode(',', $entry->subjects))->pluck('name')->toArray();
+            $entry->subjects = SubjectModel::whereIn('id', explode(',', $entry->subjects))
+                ->pluck('name')
+                ->toArray();
             return $entry;
         });
 
