@@ -4,11 +4,26 @@ use Illuminate\Support\Facades\Route;//Admin Route
 
 // This is the route for clearing and cleaning the database
 
+// First uncomment this route, then save the changes, then in terminal paste the following commands to push the changes to the GitHub
+
 // use Illuminate\Support\Facades\Artisan;
 // Route::get('/reset-database', function () {
 //     Artisan::call('migrate:fresh --force');
 //     return "Database fully reset successfully!";
 // });
+
+// git add .
+// git commit -m "Temporary route to reset full database"
+// git push origin main
+
+// Then open the following link in Browser after the app is redeployed with the changes
+// https://your-app-url.onrender.com/reset-database, in our case it is https://sms-app-4vrd.onrender.com/reset-database
+// You should see: Database fully reset successfully!
+
+// Then once you see this, again comment this route and then push those changes to GitHub
+// git add .
+// git commit -m "Remove temporary reset route"
+// git push origin main
 
 use App\Http\Controllers\admin\ClassController;//Admin Route
 use App\Http\Controllers\admin\SectionController;//Admin Route
