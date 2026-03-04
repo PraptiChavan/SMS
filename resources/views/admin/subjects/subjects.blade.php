@@ -104,7 +104,17 @@
                                                     <td>
                                                         <!-- Example Action (could be a view/edit/delete button) -->
                                                         <a href="{{ route('admin.subjects.edit', $subject->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                                                        <a href="{{ route('admin.subjects.destroy', $subject->id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this class?');"><i class="fa fa-trash fa-fw"></i></a>
+                                                        <form action="{{ route('admin.subjects.destroy', $subject->id) }}" 
+                                                            method="POST" 
+                                                            style="display:inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" 
+                                                                    class="btn btn-danger btn-sm"
+                                                                    onclick="return confirm('Are you sure you want to delete this subject?');">
+                                                                <i class="fa fa-trash fa-fw"></i>
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             @endforeach
