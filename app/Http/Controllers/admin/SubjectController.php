@@ -151,8 +151,8 @@ class SubjectController extends Controller
 
     public function destroy($id)
     {
-        $examform = ExamForm::findOrFail($id);
-        $examform->delete();
+        $subjects = SubjectModel::findOrFail($id);
+        $subjects->delete();
 
         return redirect()->route('admin.subjects')->with('success', 'Subjects deleted successfully!');
     }
