@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;//Admin Route
+use Illuminate\Support\Facades\DB;
+Route::get('/fresh-db', function () {
+    Artisan::call('migrate:fresh --force');
+    return "Database reset successfully!";
+});
 use App\Http\Controllers\admin\ClassController;//Admin Route
 use App\Http\Controllers\admin\SectionController;//Admin Route
 use App\Http\Controllers\admin\CourseController;//Admin Route
