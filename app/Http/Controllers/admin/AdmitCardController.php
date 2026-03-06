@@ -76,7 +76,7 @@ class AdmitCardController extends Controller
         // Get all exam forms for this class
         $examForms = ExamForm::where('classes', $student->classes)->get();
 
-        $exams = [];
+        $exams = []; 
         foreach ($subjects as $subjectName => $subjectId) {
             $matchedExam = null;
 
