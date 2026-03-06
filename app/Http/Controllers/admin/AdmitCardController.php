@@ -119,15 +119,17 @@ class AdmitCardController extends Controller
         */
 
         $pdf = Pdf::loadView('admin.admitcard.pdf', compact('student','subjects','exams'))
-                ->setPaper('A4','portrait');
+            ->setPaper('A4','portrait');
 
-        $tempPath = storage_path('app/admit_card_'.time().'.pdf');
+
+        $tempPath = storage_path('app/admit_card_' . time() . '.pdf');
 
         file_put_contents($tempPath, $pdf->output());
 
+
         /*
         |--------------------------------------------------------------------------
-        | Upload PDF to Cloudinary (Direct Binary Upload)
+        | Upload PDF to Cloudinary
         |--------------------------------------------------------------------------
         */
 
@@ -137,21 +139,24 @@ class AdmitCardController extends Controller
             $tempPath,
             [
                 'folder' => 'admitcards',
-                'resource_type' => 'raw',
-                'public_id' => 'admit_card_'.time(),
-                'format' => 'pdf'
+                'resource_type' => 'auto', // FIXED
+                'public_id' => 'admit_card_' . time()
             ]
         );
 
         $admitCardPath = $uploadResult['secure_url'];
 
+
         /*
         |--------------------------------------------------------------------------
-        | Delete temp file
+        | Delete Temporary File
         |--------------------------------------------------------------------------
         */
 
-        unlink($tempPath);
+        if (file_exists($tempPath)) {
+            unlink($tempPath);
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -168,7 +173,8 @@ class AdmitCardController extends Controller
         ]);
 
 
-        return redirect()->route('admin.admitcards')->with('success', 'Admit card generated successfully.');
+        return redirect()->route('admin.admitcards')
+            ->with('success', 'Admit card generated successfully.');
     }
 
 
@@ -193,6 +199,7 @@ class AdmitCardController extends Controller
         $admitcards = AdmitModel::findOrFail($id);
         $admitcards->delete();
 
-        return redirect()->route('admin.admitcards')->with('success', 'Admit card deleted successfully!');
+        return redirect()->route('admin.admitcards')
+            ->with('success', 'Admit card deleted successfully!');
     }
 }
