@@ -223,10 +223,15 @@
                                         : 'Not Available'}
                                     </td>
                                     <td>
-                                        <a href="/admin/admitcards/destroy/${admitcard.id}" class="btn btn-danger btn-sm" 
-                                           onclick="return confirm('Are you sure you want to delete this admit card?');">
-                                           <i class="fa fa-trash fa-fw"></i>
-                                        </a>
+                                        <form action="/admin/admitcards/destroy/${admitcard.id}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this admit card?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash fa-fw"></i>
+                                        </button>
+
+                                        </form>
                                     </td>
                                 </tr>`;
                                 tbody.append(row);
