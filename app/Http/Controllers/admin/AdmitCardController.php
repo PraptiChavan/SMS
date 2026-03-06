@@ -116,7 +116,9 @@ class AdmitCardController extends Controller
             $tempFile,
             [
                 'folder' => 'admitcards',
-                'resource_type' => 'raw'
+                'resource_type' => 'raw',
+                'format' => 'pdf',
+                'public_id' => 'admit_card_' . time()
             ]
         );
 
