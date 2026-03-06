@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\admin;
 
+use Cloudinary\Cloudinary;
+use Barryvdh\DomPDF\Facade\Pdf; // Import PDF library
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller; // Import the base Controller class
@@ -11,7 +13,6 @@ use App\Models\admin\SubjectModel;
 use App\Models\admin\Section;
 use App\Models\admin\ExamForm;
 use App\Models\admin\Student; // Import Student Model
-use Barryvdh\DomPDF\Facade\Pdf; // Import PDF library
 
 
 class AdmitCardController extends Controller
@@ -103,12 +104,29 @@ class AdmitCardController extends Controller
 
         // Generate PDF content from the Blade template
         $pdf = Pdf::loadView('admin.admitcard.pdf', compact('student', 'subjects', 'exams'))->setPaper('A4', 'portrait');
+        // Save temporary PDF file
+        $tempFile = tempnam(sys_get_temp_dir(), 'admitcard');
+        file_put_contents($tempFile, $pdf->output());
 
+        // Cloudinary instance
+        $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+
+        // Upload PDF
+        $uploadResult = $cloudinary->uploadApi()->upload(
+            $tempFile,
+            [
+                'folder' => 'admitcards',
+                'resource_type' => 'raw'
+            ]
+        );
+
+        // Get Cloudinary URL
+        $admitCardPath = $uploadResult['secure_url'];
         // Define storage path
-        $admitCardPath = 'admitcards/admit_card_' . time() . '.pdf';
+        // $admitCardPath = 'admitcards/admit_card_' . time() . '.pdf';
 
         // Save the generated PDF in the storage folder
-        Storage::disk('public')->put($admitCardPath, $pdf->output());
+        // Storage::disk('public')->put($admitCardPath, $pdf->output());
 
         // Store Data in Database
         AdmitModel::create([

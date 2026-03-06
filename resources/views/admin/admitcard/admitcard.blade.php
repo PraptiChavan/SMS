@@ -124,7 +124,7 @@
                                                 <td>{{ $admitcard->fees_paid }}</td>
                                                 <td>
                                                     @if($admitcard->admit_card)
-                                                        <a href="{{ asset('storage/' . $admitcard->admit_card) }}" target="_blank">Download</a>
+                                                        <a href="{{ $admitcard->admit_card }}" target="_blank">Download</a>
                                                     @else
                                                         Not Available
                                                     @endif
