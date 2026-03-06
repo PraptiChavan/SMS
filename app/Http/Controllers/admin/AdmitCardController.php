@@ -138,7 +138,8 @@ class AdmitCardController extends Controller
             [
                 'folder' => 'admitcards',
                 'resource_type' => 'raw',
-                'type' => 'upload'
+                'public_id' => 'admit_card_'.time(),
+                'format' => 'pdf'
             ]
         );
 
