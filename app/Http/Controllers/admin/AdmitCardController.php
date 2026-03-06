@@ -132,18 +132,19 @@ class AdmitCardController extends Controller
 
         $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
 
+        $fileName = 'admit_card_' . time() . '.pdf';
+
         $uploadResult = $cloudinary->uploadApi()->upload(
             "data:application/pdf;base64," . base64_encode($pdfContent),
             [
                 'folder' => 'admitcards',
                 'resource_type' => 'raw',
-                'public_id' => 'admit_card_' . time()
+                'public_id' => pathinfo($fileName, PATHINFO_FILENAME),
+                'format' => 'pdf'
             ]
         );
 
-
         $admitCardPath = $uploadResult['secure_url'];
-
 
         /*
         |--------------------------------------------------------------------------
