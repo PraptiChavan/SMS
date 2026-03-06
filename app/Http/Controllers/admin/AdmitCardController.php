@@ -139,7 +139,7 @@ class AdmitCardController extends Controller
             $tempPath,
             [
                 'folder' => 'admitcards',
-                'resource_type' => 'auto', // FIXED
+                'resource_type' => 'image',
                 'public_id' => 'admit_card_' . time()
             ]
         );
