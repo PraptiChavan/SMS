@@ -73,17 +73,31 @@ class AdmitCardController extends Controller
         // Fetch subjects for the student's class
         $subjects = SubjectModel::where('classes', $student->classes)->pluck('id', 'name');
 
+        // Get all exam forms for this class
+        $examForms = ExamForm::where('classes', $student->classes)->get();
+
         $exams = [];
         foreach ($subjects as $subjectName => $subjectId) {
-            $exam = ExamForm::where('classes', $student->classes)
-                ->whereRaw("FIND_IN_SET(?, subjects)", [$subjectId])
-                ->first();
+            $matchedExam = null;
+
+            foreach ($examForms as $exam) {
+
+                // subjects column contains comma separated subject IDs
+                $subjectArray = explode(',', $exam->subjects);
+
+                if (in_array($subjectId, $subjectArray)) {
+                    $matchedExam = $exam;
+                    break;
+                }
+            }
 
             $exams[] = [
                 'subject' => $subjectName,
-                'exam_name' => $exam->name ?? 'N/A',
-                'date' => $exam->date ?? 'N/A',
-                'time' => $exam ? $exam->start_time . ' - ' . $exam->end_time : 'N/A',
+                'exam_name' => $matchedExam->name ?? 'N/A',
+                'date' => $matchedExam->date ?? 'N/A',
+                'time' => $matchedExam 
+                    ? $matchedExam->start_time . ' - ' . $matchedExam->end_time 
+                    : 'N/A',
             ];
         }
 
