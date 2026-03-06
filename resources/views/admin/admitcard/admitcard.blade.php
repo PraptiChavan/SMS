@@ -130,7 +130,7 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <form action="{{ route('admin.classes.destroy', $class->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this class?');">
+                                                    <form action="{{ route('admin.admitcards.destroy', $admitcard->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this admit card?');">
                                                         @csrf
                                                         @method('DELETE')
 
