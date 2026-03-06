@@ -118,9 +118,12 @@ class AdmitCardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $pdf = Pdf::loadView('admin.admitcard.pdf', compact('student', 'subjects', 'exams'))
-            ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('admin.admitcard.pdf', compact('student','subjects','exams'))
+                ->setPaper('A4','portrait');
 
+        $tempPath = storage_path('app/admit_card_'.time().'.pdf');
+
+        file_put_contents($tempPath, $pdf->output());
 
         /*
         |--------------------------------------------------------------------------
@@ -128,25 +131,26 @@ class AdmitCardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $pdfContent = $pdf->output();
-
         $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
 
-        $fileName = 'admit_card_' . time();
-
         $uploadResult = $cloudinary->uploadApi()->upload(
-            "data:application/pdf;base64," . base64_encode($pdfContent),
+            $tempPath,
             [
                 'folder' => 'admitcards',
                 'resource_type' => 'raw',
-                'public_id' => $fileName,
-                'format' => 'pdf',
-                'type' => 'upload',        // IMPORTANT
-                'access_mode' => 'public'  // IMPORTANT
+                'type' => 'upload'
             ]
         );
 
         $admitCardPath = $uploadResult['secure_url'];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete temp file
+        |--------------------------------------------------------------------------
+        */
+
+        unlink($tempPath);
 
         /*
         |--------------------------------------------------------------------------
