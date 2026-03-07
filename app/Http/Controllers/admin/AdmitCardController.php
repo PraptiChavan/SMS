@@ -139,7 +139,9 @@ class AdmitCardController extends Controller
             $tempPath,
             [
                 'folder' => 'admitcards',
-                'resource_type' => 'image',
+                'resource_type' => 'raw',
+                'type' => 'upload',
+                'access_mode' => 'public',
                 'public_id' => 'admit_card_' . time()
             ]
         );
