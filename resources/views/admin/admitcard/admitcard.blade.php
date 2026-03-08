@@ -89,6 +89,9 @@
                         <a href="javascript:void(0);" onclick="showLoadingAndRedirect()" class="btn btn-success btn-xs">
                             <i class="fa fa-plus mr-2"></i>Generate New
                         </a>
+                        <button id="generateBulkBtn" class="btn btn-primary btn-xs">
+                            <i class="fa fa-bolt"></i> Generate All
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -253,5 +256,66 @@
     });
 </script>
 
+<script>
 
+$('#generateBulkBtn').click(function(){
+
+let classId = $('#classes').val();
+let sectionId = $('#sections').val();
+
+if(!classId || !sectionId){
+
+Swal.fire({
+icon:'error',
+title:'Select Class & Section',
+text:'Please select class and section first'
+});
+
+return;
+}
+
+$('#loadingOverlay').show();
+
+$.ajax({
+
+url:"{{ route('admin.admitcards.bulk') }}",
+type:"POST",
+
+data:{
+class_id:classId,
+section_id:sectionId,
+_token:"{{ csrf_token() }}"
+},
+
+success:function(res){
+
+$('#loadingOverlay').hide();
+
+Swal.fire({
+icon:'success',
+title:'Success',
+text:res.message
+}).then(()=>{
+location.reload();
+});
+
+},
+
+error:function(){
+
+$('#loadingOverlay').hide();
+
+Swal.fire({
+icon:'error',
+title:'Error',
+text:'Something went wrong'
+});
+
+}
+
+});
+
+});
+
+</script>
 @include('layouts.a_footer')

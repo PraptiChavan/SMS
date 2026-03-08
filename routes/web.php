@@ -225,6 +225,7 @@ Route::delete('/admin/admitcards/destroy/{id}', [AdmitCardController::class, 'de
 Route::get('/get-sections/{classId}', [App\Http\Controllers\admin\AdmitCardController::class, 'getSectionsByClass']);// Fetch sections dynamically
 Route::get('/admin/get-students/{classId}/{sectionId}', [AdmitCardController::class, 'getStudentsByClassSection']);
 Route::get('/admin/admitcards/filter', [AdmitCardController::class, 'filterAdmitCards'])->name('admin.admitcards.filter');
+Route::post('/admin/admitcards/generate-bulk', [AdmitCardController::class, 'generateBulk'])->name('admin.admitcards.bulk');
 
 // Result Management Routes
 Route::get('/admin/results', [ResultController::class, 'index'])->name('admin.results');// View all classes

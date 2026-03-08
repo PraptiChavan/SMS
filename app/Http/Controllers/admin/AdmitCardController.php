@@ -205,4 +205,97 @@ class AdmitCardController extends Controller
         return redirect()->route('admin.admitcards')
             ->with('success', 'Admit card deleted successfully!');
     }
+
+
+
+    public function generateBulk(Request $request)
+    {
+
+    $classId = $request->class_id;
+    $sectionId = $request->section_id;
+
+    $students = Student::where('classes',$classId)
+    ->where('sections',$sectionId)
+    ->get();
+
+    if($students->isEmpty()){
+    return response()->json(['message'=>'No students found'],404);
+    }
+
+    foreach($students as $student){
+
+    $subjects = SubjectModel::where('classes',$student->classes)->pluck('id','name');
+
+    $examForms = ExamForm::where('classes',$student->classes)->get();
+
+    $exams=[];
+
+    foreach ($subjects as $subjectName => $subjectId) {
+
+    $matchedExam = null;
+
+    foreach ($examForms as $exam) {
+
+    $subjectArray = explode(',', $exam->subjects);
+
+    if (in_array($subjectId, $subjectArray)) {
+    $matchedExam = $exam;
+    break;
+    }
+    }
+
+    $exams[] = [
+    'subject'=>$subjectName,
+    'exam_name'=>$matchedExam->name ?? 'N/A',
+    'date'=>$matchedExam->date ?? 'N/A',
+    'time'=>$matchedExam
+    ? $matchedExam->start_time.' - '.$matchedExam->end_time
+    : 'N/A'
+    ];
+
+    }
+
+    $pdf = Pdf::loadView('admin.admitcard.pdf',compact('student','subjects','exams'))
+    ->setPaper('A4','portrait');
+
+    $tempPath = storage_path('app/admit_card_'.time().'_'.$student->id.'.pdf');
+
+    file_put_contents($tempPath,$pdf->output());
+
+    $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+
+    $uploadResult = $cloudinary->uploadApi()->upload($tempPath,[
+
+    'folder'=>'admitcards',
+    'resource_type'=>'raw',
+    'flags'=>'attachment',
+    'type'=>'upload',
+    'access_mode'=>'public',
+    'public_id'=>'admit_card_'.$student->id.'_'.time()
+
+    ]);
+
+    $admitCardPath = $uploadResult['secure_url'];
+
+    if(file_exists($tempPath)){
+    unlink($tempPath);
+    }
+
+    AdmitModel::create([
+
+    'student_name'=>$student->name,
+    'fees_paid'=>'Yes',
+    'admit_card'=>$admitCardPath,
+    'classes'=>$classId,
+    'sections'=>$sectionId
+
+    ]);
+
+    }
+
+    return response()->json([
+    'message'=>'Admit cards generated successfully for '.count($students).' students'
+    ]);
+
+    }
 }
