@@ -90,7 +90,7 @@
                             <i class="fa fa-plus mr-2"></i>Generate New
                         </a>
                         <button id="generateBulkBtn" class="btn btn-primary btn-xs">
-                            <i class="fa fa-bolt"></i> Generate All
+                            <i class="fa fa-bolt mr-2"></i> Generate All
                         </button>
                     </div>
                 </div>
