@@ -71,6 +71,11 @@
                     <h3 class="card-title">Generate New Admit-Card</h3>
                 </div>
                 <div class="card-body">
+                    @if(session('error'))
+                    <div class="alert alert-danger">
+                    {{ session('error') }}
+                    </div>
+                    @endif
                     <form id="addAdmit-CardForm" enctype="multipart/form-data" method="POST" action="{{ route('admin.admitcards.store') }}">
                         @csrf
                         <div class="form-group">
