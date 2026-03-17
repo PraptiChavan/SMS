@@ -90,9 +90,7 @@ class AdmitCardController extends Controller
 
         $subjects = SubjectModel::where('classes', $student->classes)->pluck('id', 'name');
 
-
         $examForms = ExamForm::where('classes', $student->classes)->get();
-
 
         $exams = [];
 
@@ -213,6 +211,37 @@ class AdmitCardController extends Controller
         $subjects = SubjectModel::where('classes',$classId)->pluck('id','name');
         $examForms = ExamForm::where('classes',$classId)->get();
 
+        /*
+        |----------------------------------------------------------
+        | 🔥 Pre-build exam schedule ONCE (Huge speed boost)
+        |----------------------------------------------------------
+        */
+        $examsTemplate = [];
+
+        foreach ($subjects as $subjectName => $subjectId) {
+
+            $matchedExam = null;
+
+            foreach ($examForms as $exam) {
+
+                $subjectArray = explode(',', $exam->subjects);
+
+                if (in_array($subjectId, $subjectArray)) {
+                    $matchedExam = $exam;
+                    break;
+                }
+            }
+
+            $examsTemplate[] = [
+                'subject'=>$subjectName,
+                'exam_name'=>$matchedExam->name ?? 'N/A',
+                'date'=>$matchedExam->date ?? 'N/A',
+                'time'=>$matchedExam
+                    ? $matchedExam->start_time.' - '.$matchedExam->end_time
+                    : 'N/A'
+            ];
+        }
+
         $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
 
         $generated = 0;
@@ -223,31 +252,32 @@ class AdmitCardController extends Controller
                 continue;
             }
 
-            $exams=[];
+            // $exams=[];
+            $exams = $examsTemplate;
 
-            foreach ($subjects as $subjectName => $subjectId) {
+            // foreach ($subjects as $subjectName => $subjectId) {
 
-                $matchedExam = null;
+            //     $matchedExam = null;
 
-                foreach ($examForms as $exam) {
+            //     foreach ($examForms as $exam) {
 
-                    $subjectArray = explode(',', $exam->subjects);
+            //         $subjectArray = explode(',', $exam->subjects);
 
-                    if (in_array($subjectId, $subjectArray)) {
-                        $matchedExam = $exam;
-                        break;
-                    }
-                }
+            //         if (in_array($subjectId, $subjectArray)) {
+            //             $matchedExam = $exam;
+            //             break;
+            //         }
+            //     }
 
-                $exams[] = [
-                    'subject'=>$subjectName,
-                    'exam_name'=>$matchedExam->name ?? 'N/A',
-                    'date'=>$matchedExam->date ?? 'N/A',
-                    'time'=>$matchedExam
-                        ? $matchedExam->start_time.' - '.$matchedExam->end_time
-                        : 'N/A'
-                ];
-            }
+            //     $exams[] = [
+            //         'subject'=>$subjectName,
+            //         'exam_name'=>$matchedExam->name ?? 'N/A',
+            //         'date'=>$matchedExam->date ?? 'N/A',
+            //         'time'=>$matchedExam
+            //             ? $matchedExam->start_time.' - '.$matchedExam->end_time
+            //             : 'N/A'
+            //     ];
+            // }
 
             $pdf = Pdf::loadView('admin.admitcard.pdf',compact('student','subjects','exams'))
                 ->setPaper('A4','portrait');
@@ -304,10 +334,35 @@ class AdmitCardController extends Controller
     }
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | 🧹 Delete Admit Card + Cloudinary File
+    |--------------------------------------------------------------------------
+    */
     public function destroy($id)
     {
-        $admitcards = AdmitModel::findOrFail($id);
-        $admitcards->delete();
+        $admitcard = AdmitModel::findOrFail($id);
+
+        if ($admitcard->admit_card) {
+
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+
+            try {
+                $urlParts = explode('/', $admitcard->admit_card);
+                $fileName = end($urlParts);
+
+                $publicId = 'admitcards/' . pathinfo($fileName, PATHINFO_FILENAME);
+
+                $cloudinary->uploadApi()->destroy($publicId, [
+                    'resource_type' => 'raw'
+                ]);
+
+            } catch (\Exception $e) {
+                // ignore errors
+            }
+        }
+
+        $admitcard->delete();
 
         return redirect()->route('admin.admitcards')
             ->with('success', 'Admit card deleted successfully!');
